@@ -19,57 +19,57 @@
 
 enum
 {
-    PARTICLE_GROUP_SIZE     = 1024,
-    PARTICLE_GROUP_COUNT    = 8192,
-    PARTICLE_COUNT          = (PARTICLE_GROUP_SIZE * PARTICLE_GROUP_COUNT),
-    MAX_ATTRACTORS          = 64
+    PARTICLE_GROUP_SIZE = 1024,
+    PARTICLE_GROUP_COUNT = 8192,
+    PARTICLE_COUNT = (PARTICLE_GROUP_SIZE * PARTICLE_GROUP_COUNT),
+    MAX_ATTRACTORS = 64
 };
 
 BEGIN_APP_DECLARATION(ComputeParticleSimulator)
-    // Override functions from base class
-    virtual void Initialize(const char * title);
-    virtual void Display(bool auto_redraw);
-    virtual void Finalize(void);
-    virtual void Resize(int width, int height);
+// Override functions from base class
+virtual void Initialize(const char *title);
+virtual void Display(bool auto_redraw);
+virtual void Finalize(void);
+virtual void Resize(int width, int height);
 
-    // Compute program
-    GLuint  compute_prog;
-    GLint   dt_location;
+// Compute program
+GLuint compute_prog;
+GLint dt_location;
 
-    // Posisition and velocity buffers
-    union
+// Posisition and velocity buffers
+union
+{
+    struct
     {
-        struct
-        {
-            GLuint position_buffer;
-            GLuint velocity_buffer;
-        };
-        GLuint buffers[2];
+        GLuint position_buffer;
+        GLuint velocity_buffer;
     };
+    GLuint buffers[2];
+};
 
-    // TBOs
-    union
+// TBOs
+union
+{
+    struct
     {
-        struct
-        {
-            GLuint position_tbo;
-            GLuint velocity_tbo;
-        };
-        GLuint tbos[2];
+        GLuint position_tbo;
+        GLuint velocity_tbo;
     };
+    GLuint tbos[2];
+};
 
-    // Attractor UBO
-    GLuint  attractor_buffer;
+// Attractor UBO
+GLuint attractor_buffer;
 
-    // Program, vao and vbo to render a full screen quad
-    GLuint  render_prog;
-    GLuint  render_vao;
-    GLuint  render_vbo;
+// Program, vao and vbo to render a full screen quad
+GLuint render_prog;
+GLuint render_vao;
+GLuint render_vbo;
 
-    // Mass of the attractors
-    float attractor_masses[MAX_ATTRACTORS];
+// Mass of the attractors
+float attractor_masses[MAX_ATTRACTORS];
 
-    float aspect_ratio;
+float aspect_ratio;
 END_APP_DECLARATION()
 
 DEFINE_APP(ComputeParticleSimulator, "Compute Shader Particle System")
@@ -86,7 +86,7 @@ static inline float random_float()
 
     tmp = seed ^ (seed >> 4) ^ (seed << 15);
 
-    *((unsigned int *) &res) = (tmp >> 9) | 0x3F800000;
+    *((unsigned int *)&res) = (tmp >> 9) | 0x3F800000;
 
     return (res - 1.0f);
 }
@@ -100,7 +100,7 @@ static vmath::vec3 random_vector(float minmag = 0.0f, float maxmag = 1.0f)
     return randomvec;
 }
 
-void ComputeParticleSimulator::Initialize(const char * title)
+void ComputeParticleSimulator::Initialize(const char *title)
 {
     base::Initialize(title);
 
@@ -110,8 +110,7 @@ void ComputeParticleSimulator::Initialize(const char * title)
     compute_prog = glCreateProgram();
 
     static const char compute_shader_source[] =
-        STRINGIZE(
-#version 430 core\n
+        STRINGIZE(#version 430 core\n
 
 layout (std140, binding = 0) uniform attractor_block
 {
@@ -166,10 +165,10 @@ void main(void)
     glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
     glBufferData(GL_ARRAY_BUFFER, PARTICLE_COUNT * sizeof(vmath::vec4), NULL, GL_DYNAMIC_COPY);
 
-    vmath::vec4 * positions = (vmath::vec4 *)glMapBufferRange(GL_ARRAY_BUFFER,
-                                                              0,
-                                                              PARTICLE_COUNT * sizeof(vmath::vec4),
-                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    vmath::vec4 *positions = (vmath::vec4 *)glMapBufferRange(GL_ARRAY_BUFFER,
+                                                             0,
+                                                             PARTICLE_COUNT * sizeof(vmath::vec4),
+                                                             GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
     for (i = 0; i < PARTICLE_COUNT; i++)
     {
@@ -183,10 +182,10 @@ void main(void)
     glBindBuffer(GL_ARRAY_BUFFER, velocity_buffer);
     glBufferData(GL_ARRAY_BUFFER, PARTICLE_COUNT * sizeof(vmath::vec4), NULL, GL_DYNAMIC_COPY);
 
-    vmath::vec4 * velocities = (vmath::vec4 *)glMapBufferRange(GL_ARRAY_BUFFER,
-                                                               0,
-                                                               PARTICLE_COUNT * sizeof(vmath::vec4),
-                                                               GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    vmath::vec4 *velocities = (vmath::vec4 *)glMapBufferRange(GL_ARRAY_BUFFER,
+                                                              0,
+                                                              PARTICLE_COUNT * sizeof(vmath::vec4),
+                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
     for (i = 0; i < PARTICLE_COUNT; i++)
     {
@@ -263,10 +262,10 @@ void ComputeParticleSimulator::Display(bool auto_redraw)
         return;
     }
 
-    vmath::vec4 * attractors = (vmath::vec4 *)glMapBufferRange(GL_UNIFORM_BUFFER,
-                                                               0,
-                                                               32 * sizeof(vmath::vec4),
-                                                               GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    vmath::vec4 *attractors = (vmath::vec4 *)glMapBufferRange(GL_UNIFORM_BUFFER,
+                                                              0,
+                                                              32 * sizeof(vmath::vec4),
+                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
     int i;
 

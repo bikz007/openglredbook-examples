@@ -2,7 +2,7 @@
 #define __VAPP_H__
 
 #include "vgl.h"
-
+#include <sys/time.h>
 class VermilionApplication
 {
 protected:

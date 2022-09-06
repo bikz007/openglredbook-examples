@@ -2,7 +2,7 @@
 
 #include "vbm.h"
 #include "vgl.h"
-
+#include <iostream>
 #include <stdio.h>
 
 VBObject::VBObject(void)

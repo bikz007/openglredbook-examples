@@ -5,7 +5,7 @@
 // #include <GL3/gl3w.h>
 
 #define GLEW_STATIC
-#include <GL/glew.h>
+#include <OpenGL/glew.h>
 
 #include <cstdint>
 
