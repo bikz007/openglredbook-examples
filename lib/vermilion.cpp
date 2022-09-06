@@ -26,7 +26,7 @@ void VermilionApplication::char_callback(GLFWwindow* window, unsigned int codepo
 unsigned int VermilionApplication::app_time()
 {
 #ifdef _WIN32
-    ULONGLONG currentTime = ::GetTickCount64();
+    ULONGLONG currentTime = ::GetTickCount();
 
     return (unsigned int)(currentTime - m_appStartTime);
 #else
@@ -37,7 +37,7 @@ unsigned int VermilionApplication::app_time()
 void VermilionApplication::Initialize(const char * title)
 {
 #ifdef _WIN32
-    m_appStartTime = ::GetTickCount64();
+    m_appStartTime = ::GetTickCount();
 #else
     gettimeofday(&m_appStartTime, nullptr);
 #endif
